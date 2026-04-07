@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>My Todo List</h1>
+
+    <!-- Input section -->
+    <div class="input-section">
+        <input 
+            type="text" 
+            id="todo-input" 
+            placeholder="Enter a new todo..."
+        />
+        <button onclick="addTodo()">Add</button>
+    </div>
+
+    <!-- Todo list -->
+    <ul id="todo-list">
+        <!-- Todos will be inserted here by JavaScript -->
+    </ul>
+
+    <script>
+        const API_URL = "https://x00nxpe2fa.execute-api.us-east-1.amazonaws.com/dev/todos";
+
+        // Runs when page loads
+        window.onload = fetchTodos;
+
+        // GET - fetch all todos
+        function fetchTodos() {
+            fetch(API_URL)
+                .then(response => response.json())
+                .then(todos => {
+                    const list = document.getElementById("todo-list");
+                    list.innerHTML = ""; // clear list first
+
+                    todos.forEach(todo => {
+                        const item = document.createElement("li");
+                        item.innerHTML = `
+                            <span>${todo.task}</span>
+                            <button 
+                                class="delete-btn" 
+                                onclick="deleteTodo('${todo.todoId}')">
+                                Delete
+                            </button>
+                        `;
+                        list.appendChild(item);
+                    });
+                });
+        }
+
+        // POST - add a new todo
+        function addTodo() {
+            const input = document.getElementById("todo-input");
+            const task = input.value;
+
+            if (!task) return; // do nothing if input is empty
+
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ task: task })
+            })
+            .then(() => {
+                input.value = ""; // clear input after adding
+                fetchTodos();     // refresh the list
+            });
+        }
+
+        // DELETE - delete a todo
+        // function deleteTodo(todoId) {
+        //     fetch(API_URL + "/" + todoId, {
+        //         method: "DELETE"
+        //     })
+        //     .then(() => fetchTodos()); // refresh list after deleting
+        // }
+        function deleteTodo(todoId) {
+            console.log("Deleting todoId:", todoId);
+            console.log("Full URL:", API_URL + "/" + todoId);
+            
+            fetch(API_URL + "/" + todoId, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => {
+                console.log("Response status:", response.status);
+                console.log("Response headers:", response.headers);
+                return response.json();
+            })
+            .then(data => {
+                console.log("Response data:", data);
+                fetchTodos();
+            })
+            .catch(error => {
+                console.log("Error:", error);
+            });
+        }
+
+    </script>
+
+</body>
+</html>
