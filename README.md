@@ -1,7 +1,9 @@
 # AWS-Serverless-Todo-List
-A full stack serverless todo application build on AWS. 
+A full stack serverless todo application built on AWS. 
 
 ## Architecture
+<img width="959" height="720" alt="Screenshot 2026-04-07 205838" src="https://github.com/user-attachments/assets/90ef4a79-dd57-4b29-9fa2-261e3e8694b0" />
+
 - Frontend: HTML/CSS/JavaScript hosted on Amazon S3
 - API: Amazon API Gateway (REST API)
 - Backend: AWS Lambda (Python)
@@ -12,11 +14,14 @@ A full stack serverless todo application build on AWS.
 - View all todos
 - Delete todos
 
+## How It Works
+1. User accesses the frontend hosted on S3
+2. JavaScript makes REST API calls to API Gateway
+3. API Gateway triggers Lambda function
+4. Lambda reads/writes to DynamoDB
+
 ## Live Demo
 http://aaron-todolist-bucket.s3-website-us-east-1.amazonaws.com
-
-## Architecture
-<img width="959" height="720" alt="Screenshot 2026-04-07 205838" src="https://github.com/user-attachments/assets/90ef4a79-dd57-4b29-9fa2-261e3e8694b0" />
 
 ## Tech Stack
 - Frontend: HTML/CSS/JavaScript
